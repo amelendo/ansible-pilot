@@ -1,0 +1,31 @@
+---
+- name: git module demo
+  hosts: all
+  vars:
+    repo: "git@github.com:amelendo/docker.git"
+    dest: "/home/angel/docker"
+    sshkey: "~/.ssh/id_rsa"
+    branch: "main"  # or another existing branch
+
+  tasks:
+    - name: ensure git pkg installed
+      ansible.builtin.yum:
+        name: git
+        state: present
+        update_cache: true
+      become: true
+
+    - name: fetch latest changes
+      ansible.builtin.git:
+        repo: "{{ repo }}"
+        dest: "{{ dest }}"
+        key_file: "{{ sshkey }}"
+        update: yes
+
+    - name: checkout git repo
+      ansible.builtin.git:
+        repo: "{{ repo }}"
+        dest: "{{ dest }}"
+        key_file: "{{ sshkey }}"
+        version: "{{ branch }}"
+
